@@ -1,0 +1,43 @@
+clearscreen.
+
+SET TARGET_HEADING TO 300.
+SET TARGET_HEIGHT TO 8000.
+
+
+SET MYSTEER TO HEADING(TARGET_HEADING, 70).
+LOCK STEERING TO MYSTEER. 
+
+LOCK THROTTLE TO 1.0.
+
+WHEN MAXTHRUST = 0 THEN {  
+	if STAGE:NUMBER > 0 {
+		PRESERVE.
+	}
+	
+	if STAGE:READY {
+		STAGE.
+	}
+}.
+
+
+until false {
+	clearscreen.
+
+	// Velocity regulation
+	IF SHIP:SENSORS:ACC:MAG > 10 {
+		LOCK THROTTLE TO 0.3.
+		print "Slowing down due to gravitational forces of: " + SHIP:SENSORS:ACC:MAG.
+	} else {
+		print "".
+		LOCK THROTTLE TO 1.0.
+	}
+	
+	IF ALT:RADAR < TARGET_HEIGHT - 1000 and alt:radar > TARGET_HEIGHT - 2000 {
+		SET MYSTEER to HEADING(TARGET_HEADING, 20).
+	} else if ALT:RADAR > TARGET_HEIGHT - 1000 and ALT:RADAR < TARGET_HEIGHT + 1000 {
+		SET MYSTEER to HEADING(TARGET_HEADING, 0).
+	} else if ALT:RADAR > TARGET_HEIGHT + 1000 {
+		SET MYSTEER to HEADING(TARGET_HEADING, -10).
+	}
+
+}
